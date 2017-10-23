@@ -19,10 +19,10 @@ app.post('/todo', (req, res)=> {
         completedAt: req.body.completedAt
     });
     newTodo.save().then((result)=>{
-        console.log("Record Insertion Sucessful !",result);
+        // console.log("Record Insertion Sucessful !",result);
         res.send(result);
     }).catch((error) => {
-        console.log("Error in Inserting Record !", error);
+        // console.log("Error in Inserting Record !", error);
         res.status(400).send(error);
     });
 })
@@ -33,3 +33,4 @@ app.listen(3000, ()=>{
     console.log("Server Started on Port 3000");
 })
 
+module.exports  = {app};
