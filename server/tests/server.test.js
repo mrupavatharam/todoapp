@@ -1,14 +1,17 @@
 const expect = require('expect');
 const request = require('supertest');
+const {ObjectID} = require('mongodb');
 
 const {app} = require('../server');
 const {Todo} = require('../models/todo');
 
 const mockTodos = [
     {
+        _id: new ObjectID(),
         "text":"Test 11 todo for testing"
     },
     {
+        _id:new ObjectID(), 
         "text":"Test 12 todo for testing"
     }
 ];
@@ -68,7 +71,6 @@ describe('POST /todo',()=>{
 
 
 describe('GET /todos',() => {
-
     it('should get all todos',(done)=>{
         request(app)
         .get('/todos')
@@ -78,6 +80,39 @@ describe('GET /todos',() => {
         })
         .end(done) 
     })
+})
 
+describe('GET /todo with Id', ()=>{
+    it('should get result with id',(done)=>{
+        request(app)
+        .get(`/todo/${mockTodos[0]._id}`)
+        .expect(200)
+        .expect((res)=>{
+            expect(res.body.todo.text).toBe('Test 11 todo for testing')
+        })
+        .end(done)
+    })
+
+    it('should return invalid object Id',(done)=>{
+        request(app)
+        .get('/todo/12313')
+        .expect(404)
+        .expect((err)=>{
+            console.log(err);
+            expect(err.body.message).toBe('Invalid Object Id')
+        })
+        .end(done)
+    })
+
+    it('should return 404 if todo not found',(done)=>{
+        var tempObjId = new ObjectID();
+        request(app)
+        .get(`/todo/${tempObjId}`)
+        .expect(404)
+        .expect((err)=>{
+            expect(err.body.message).toBe('Todo Not found')
+        })
+        .end(done)
+    })
 
 })
