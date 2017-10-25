@@ -138,8 +138,18 @@ describe('DELETE /todo with Id', () =>{
             .expect((res)=>{
                 expect(res.body.todo._id).toBe(delTodoId);
             })
-            .end(done)
-        })
+            .end((err, res) => {
+                if(err)
+                {
+                    return done(err);
+                }
+                Todo.findById(delTodoId).then((todo)=>{
+                    expect(todo).toBeFalsy();
+                    done();
+                })
+                .catch((e) => done(e));
+            });
+        });
     
         it('should return 404 not found', (done) =>{
             var delTodoId = new ObjectID();
