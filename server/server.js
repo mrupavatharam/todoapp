@@ -1,3 +1,5 @@
+require('./config/config');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
@@ -124,7 +126,7 @@ app.patch('/todo/:id',(req, res) => {
 
 
 app.listen(port, ()=>{
-    console.log(`Server Started on Port ${port}`);
+    console.log(`Server Started on Port ${port} in '${process.env.NODE_ENV}' mode`);
 })
 
 module.exports  = {app};
