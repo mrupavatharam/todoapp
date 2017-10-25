@@ -8,11 +8,11 @@ const {Todo} = require('../models/todo');
 const mockTodos = [
     {
         _id: new ObjectID(),
-        "text":"Test 11 todo for testing"
+        "text":"Test 21 todo for testing"
     },
     {
         _id:new ObjectID(), 
-        "text":"Test 12 todo for testing"
+        "text":"Test 22 todo for testing"
     }
 ];
 
@@ -162,7 +162,74 @@ describe('DELETE /todo with Id', () =>{
             .end(done)
         })
     
+})
+
+describe('UPDATE /Todo', () => {
+
+    it('should update the todo',(done) => {
+
+        var updTodoId = mockTodos[1]._id.toHexString();
+        var updTodoBody = {
+            "text": "This is the updated Text",
+            "completed":true
+        }
+        request(app)
+        .patch(`/todo/${updTodoId}`)
+        .send(updTodoBody)
+        .expect(200)
+        .expect((res) => {
+            expect(res.body.todo.text).toBe(updTodoBody.text);
+        })
+        .end((err, res) => {
+            if(err)
+            {
+                return done(err);
+            }
+            Todo.findById(updTodoId).then((res)=>{
+                expect(res.text).toBe(updTodoBody.text);
+                expect(res.completed).toBe(true);
+                expect(typeof res.completedAt).toBe('number');
+                done();
+            })
+            .catch((err) => {
+                return done(err);
+            })
+        })
     })
+
+    it('should clear completedAt when completed is true', (done) => {
+
+        var updTodoId = mockTodos[1]._id.toHexString();
+        var updTodoBody = {
+            "text": "This is the again updated Text",
+            "completed":false
+        }
+
+        request(app)
+        .patch(`/todo/${updTodoId}`)
+        .send(updTodoBody)
+        .expect(200)
+        .end((err, res) => {
+            if(err)
+            {
+                return done(err);
+            }
+            Todo.findById(updTodoId).then((res) =>{
+                expect(res.text).toBe(updTodoBody.text);
+                expect(res.completed).toBe(updTodoBody.completed);
+                expect(res.completedAt).toBeFalsy();
+                done();
+            })
+            .catch((err) => {
+                return done(err);
+            })
+        })
+            
+    })
+
+
+
+})
     
     
     
