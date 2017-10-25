@@ -85,10 +85,10 @@ describe('GET /todos',() => {
 describe('GET /todo with Id', ()=>{
     it('should get result with id',(done)=>{
         request(app)
-        .get(`/todo/${mockTodos[0]._id}`)
+        .get(`/todo/${mockTodos[1]._id}`)
         .expect(200)
         .expect((res)=>{
-            expect(res.body.todo.text).toBe('Test 11 todo for testing')
+            expect(res.body.todo.text).toBe(mockTodos[1].text)
         })
         .end(done)
     })
@@ -98,7 +98,6 @@ describe('GET /todo with Id', ()=>{
         .get('/todo/12313')
         .expect(404)
         .expect((err)=>{
-            console.log(err);
             expect(err.body.message).toBe('Invalid Object Id')
         })
         .end(done)
@@ -116,3 +115,44 @@ describe('GET /todo with Id', ()=>{
     })
 
 })
+
+
+describe('DELETE /todo with Id', () =>{
+    
+        it('should return invalid objectId',(done) =>{
+            request(app)
+            .delete('/todo/12312312312')
+            .expect(404)
+            .expect((err)=>{
+                // console.log(err);
+                expect(err.body.message).toBe('Invalid Object Id')
+            })
+            .end(done)
+        })
+    
+        it('should get result with id', (done)=>{
+            var delTodoId = mockTodos[0]._id.toHexString();
+            request(app)
+            .delete(`/todo/${delTodoId}`)
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.todo._id).toBe(delTodoId);
+            })
+            .end(done)
+        })
+    
+        it('should return 404 not found', (done) =>{
+            var delTodoId = new ObjectID();
+            request(app)
+            .delete(`/todo/${delTodoId}`)
+            .expect(404)
+            .expect((err)=>{
+                expect(err.body.message).toBe('Todo Not found')
+            })
+            .end(done)
+        })
+    
+    })
+    
+    
+    
