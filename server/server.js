@@ -85,7 +85,6 @@ app.delete('/todo/:id',(req, res) => {
     })
 })
 
-
 app.patch('/todo/:id',(req, res) => {
     var todoId = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);
@@ -112,6 +111,31 @@ app.patch('/todo/:id',(req, res) => {
     })
 
 })
+
+//user routes
+
+app.post('/user', (req, res) => {
+    var body = _.pick(req.body,['email','name','password']);
+    var user = new 
+    User(body);
+    user.save()
+    .then((result) => {      
+        var token = user.generateAuthTokens();
+        return token;
+    })
+    .then((token)=>{
+        console.log("in controller",token);
+        res.header('x-auth', token).send(user);
+    })
+    .catch((error) => {
+        console.log(error);
+        res.status(400).send(error);
+    })
+})
+
+
+
+
 
 
 
